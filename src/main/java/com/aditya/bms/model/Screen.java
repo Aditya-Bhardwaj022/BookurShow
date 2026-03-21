@@ -33,5 +33,6 @@ public class Screen {
     @OneToMany(mappedBy = "screen",cascade = CascadeType.ALL)
     private List<Seat>seats;
 
-
+    @Column(nullable = false)
+    private Integer seatsPerRow;
 }
