@@ -14,4 +14,5 @@ public class ScreenDTO {
     private String name;
     private Integer totalseats;
     private TheatreDTO theatre;
+    private Integer seatsPerRow;
 }
