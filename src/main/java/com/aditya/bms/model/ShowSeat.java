@@ -33,4 +33,7 @@ public class ShowSeat {
      @JoinColumn(name = "booking_id")
     private Booking booking;
 
+    @Column(nullable = false)
+    private Integer seatsPerRow;
+
 }

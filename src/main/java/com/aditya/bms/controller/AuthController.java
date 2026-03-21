@@ -50,7 +50,10 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
-       String token= jwtService.generateToken (user.getEmail());
+        java.util.Map<String, Object> claims = new java.util.HashMap<>();
+        claims.put("role", user.getRole().name());
+
+        String token = jwtService.generateToken(claims, user.getEmail());
         LoginResponseDTO.DataResponse data = new LoginResponseDTO.DataResponse(
                 token,
                 user.getId(),
