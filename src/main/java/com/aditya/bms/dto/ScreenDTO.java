@@ -1,7 +1,5 @@
 package com.aditya.bms.dto;
 
-import com.aditya.bms.model.Theatre;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
