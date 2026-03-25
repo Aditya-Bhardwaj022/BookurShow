@@ -51,6 +51,6 @@ public class ShowController {
             @RequestParam LocalDateTime startDate,
             @RequestParam LocalDateTime endDate) {
 
-        return ResponseEntity.ok( showService.getShowsByDateRange(startDate, endDate));
+        return ResponseEntity.ok(showService.getShowsByDateRange(startDate, endDate));
     }
 }
