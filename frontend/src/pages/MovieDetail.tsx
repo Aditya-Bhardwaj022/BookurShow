@@ -1,29 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchMovieById, fetchShowsByMovie, createBooking } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
-interface Movie {
-  id: number;
-  title: string;
-  genre: string;
-  description: string;
-  durationMinutes: number;
-  language: string;
-}
-
-interface Show {
-  id: number;
-  startTime: string;
-  venue: string;
-  city: string;
-  totalSeats: number;
-  availableSeats: number;
-  price: number;
-}
+import { fetchMovieById, fetchShowsByMovie, createBooking } from '../lib/api';
+import type { Movie, Show } from '../types';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 
 export default function MovieDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -60,7 +42,6 @@ export default function MovieDetailPage() {
     setBooking(true);
     setError('');
     try {
-      // userId from localStorage (stored at login time as 'userId')
       const userId = Number(localStorage.getItem('userId') || 1);
       await createBooking({ showId: selectedShow.id, userId, numberOfSeats: seats });
       setBookingSuccess(true);
@@ -81,10 +62,9 @@ export default function MovieDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Movie details */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold tracking-tight mb-2">{movie.title}</h1>
-        <p className="text-muted-foreground mb-1">{movie.genre} · {movie.language} · {movie.durationMinutes} min</p>
+        <p className="text-muted-foreground mb-1">{movie.genre} · {movie.language} · {movie.durationMins} min</p>
         <p className="text-sm mt-4 leading-relaxed">{movie.description}</p>
       </div>
 
@@ -99,7 +79,6 @@ export default function MovieDetailPage() {
         </div>
       )}
 
-      {/* Shows */}
       <h2 className="text-2xl font-semibold mb-4">Available Shows</h2>
       {shows.length === 0 ? (
         <p className="text-muted-foreground">No shows available for this movie.</p>
@@ -119,26 +98,24 @@ export default function MovieDetailPage() {
               }}
             >
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">{show.venue}</CardTitle>
-                <p className="text-sm text-muted-foreground">{show.city}</p>
+                <CardTitle className="text-base">{show.screen?.theatre?.name || 'Grand Cinema'}</CardTitle>
+                <div className="text-xs text-muted-foreground">{show.screen?.theatre?.city || 'Location'}</div>
               </CardHeader>
               <CardContent className="pt-0 space-y-1 text-sm">
                 <p>🕐 {new Date(show.startTime).toLocaleString()}</p>
-                <p>💺 {show.availableSeats} seats available</p>
-                <p className="font-semibold">₹{show.price} per seat</p>
+                <p>💺 {show.availableSeats ?? 0} seats available</p>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
 
-      {/* Booking panel */}
       {selectedShow && (
-        <Card className="border-primary">
+        <Card className="border-primary shadow-lg">
           <CardHeader>
             <CardTitle>Confirm Booking</CardTitle>
             <p className="text-sm text-muted-foreground">
-              {movie.title} — {selectedShow.venue}, {selectedShow.city}
+              {movie.title} — {selectedShow.screen?.theatre?.name}, {selectedShow.screen?.theatre?.city}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -148,15 +125,12 @@ export default function MovieDetailPage() {
                 id="seats"
                 type="number"
                 min={1}
-                max={selectedShow.availableSeats}
+                max={selectedShow.availableSeats || 20}
                 value={seats}
-                onChange={(e) => setSeats(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSeats(Number(e.target.value))}
                 className="w-32"
               />
             </div>
-            <p className="font-semibold text-lg">
-              Total: ₹{(selectedShow.price * seats).toFixed(2)}
-            </p>
             {isLoggedIn ? (
               <Button onClick={handleBook} disabled={booking} className="w-full">
                 {booking ? 'Booking...' : 'Confirm & Book'}

@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchMovies } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface Movie {
-  id: number;
-  title: string;
-  genre: string;
-  description: string;
-  durationMinutes: number;
-  language: string;
-  releaseDate: string;
-}
+import { fetchMovies } from '../lib/api';
+import type { Movie } from '../types';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -49,7 +40,7 @@ export default function MoviesPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <p className="text-muted-foreground text-lg">No movies available yet.</p>
-        {localStorage.getItem('role') === 'ADMIN' && (
+        {(localStorage.getItem('role') === 'ADMIN' || localStorage.getItem('role') === 'ROLE_ADMIN') && (
           <Button asChild>
             <Link to="/admin/movies/new">Add a Movie</Link>
           </Button>
@@ -62,7 +53,7 @@ export default function MoviesPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Now Showing</h1>
-        {localStorage.getItem('role') === 'ADMIN' && (
+        {(localStorage.getItem('role') === 'ADMIN' || localStorage.getItem('role') === 'ROLE_ADMIN') && (
           <Button asChild variant="outline">
             <Link to="/admin/movies/new">+ Add Movie</Link>
           </Button>
@@ -80,7 +71,7 @@ export default function MoviesPage() {
             <CardContent className="flex-1">
               <p className="text-sm text-muted-foreground line-clamp-3">{movie.description}</p>
               <p className="text-xs mt-3 text-muted-foreground">
-                ⏱ {movie.durationMinutes} min
+                ⏱ {movie.durationMins} min
               </p>
             </CardContent>
             <CardFooter>

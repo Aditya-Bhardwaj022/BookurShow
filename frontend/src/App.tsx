@@ -1,30 +1,63 @@
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Moon, Sun } from 'lucide-react';
 import LoginPage from './pages/Login';
 import SignupPage from './pages/Signup';
 import MoviesPage from './pages/Movies';
 import MovieDetailPage from './pages/MovieDetail';
 import AdminMoviePage from './pages/AdminMovie';
+import AdminDashboardPage from './pages/AdminDashboard';
+import AdminTheatresPage from './pages/AdminTheatres';
+import AdminShowsPage from './pages/AdminShows';
 import { Button } from './components/ui/button';
 
+function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: string }) {
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role');
+
+  if (!token) return <Navigate to="/login" replace />;
+  if (role && (userRole !== role && userRole !== `ROLE_${role}`)) return <Navigate to="/" replace />;
+
+  return <>{children}</>;
+}
+
 function Navbar() {
-  const navigate = useNavigate();
   const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
+  const [userRole, setUserRole] = useState(localStorage.getItem('role') || '');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'system');
   const isLoggedIn = !!localStorage.getItem('token');
 
   // Sync with storage changes (e.g. after login)
   useEffect(() => {
-    const sync = () => setUserName(localStorage.getItem('userName') || '');
+    const sync = () => {
+      setUserName(localStorage.getItem('userName') || '');
+      setUserRole(localStorage.getItem('role') || '');
+      setTheme(localStorage.getItem('theme') || 'system');
+    };
     window.addEventListener('storage', sync);
     return () => window.removeEventListener('storage', sync);
   }, []);
 
+  // Sync theme with DOM
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const isDark = window.document.documentElement.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userId');
-    navigate('/login');
+    localStorage.clear();
+    window.location.href = '/login';
   };
 
   return (
@@ -34,13 +67,21 @@ function Navbar() {
           <span className="text-xl font-bold tracking-tight">🎬 BookYourShow</span>
         </Link>
         <nav className="flex items-center space-x-3">
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </Button>
           <Button variant="ghost" asChild>
             <Link to="/movies">Movies</Link>
           </Button>
+          {(userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') && (
+            <Button variant="ghost" className="text-primary font-semibold" asChild>
+              <Link to="/admin">Dashboard</Link>
+            </Button>
+          )}
           {isLoggedIn ? (
             <>
               {userName && (
-                <span className="text-sm text-muted-foreground hidden sm:inline">
+                <span className="text-sm text-muted-foreground hidden sm:inline ml-2">
                   Hi, {userName}
                 </span>
               )}
@@ -117,7 +158,28 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/movies" element={<MoviesPage />} />
           <Route path="/movies/:id" element={<MovieDetailPage />} />
-          <Route path="/admin/movies/new" element={<AdminMoviePage />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={
+            <ProtectedRoute role="ADMIN">
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/movies/new" element={
+            <ProtectedRoute role="ADMIN">
+              <AdminMoviePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/theatres" element={
+            <ProtectedRoute role="ADMIN">
+              <AdminTheatresPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/shows" element={
+            <ProtectedRoute role="ADMIN">
+              <AdminShowsPage />
+            </ProtectedRoute>
+          } />
         </Routes>
       </Layout>
     </Router>

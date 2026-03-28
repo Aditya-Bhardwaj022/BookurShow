@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -30,13 +30,13 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      // Token is nested inside data field per LoginResponseDTO
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('role', data.data.roles?.[0] || '');
-      localStorage.setItem('userName', data.data.name || '');
-      localStorage.setItem('userId', String(data.data.id || ''));
-      // Redirect to movies
-      navigate('/movies');
+      // Token is defined as 'accessToken' inside the backend response's 'data' object
+      localStorage.setItem('token', data.data?.accessToken || data.accessToken || data.data?.token || data.token);
+      localStorage.setItem('role', data.data?.roles?.[0] || data.roles?.[0] || '');
+      localStorage.setItem('userName', data.data?.username || data.username || '');
+      localStorage.setItem('userId', String(data.data?.id || data.id || ''));
+      // Redirect to movies using full page load to ensure Navbar updates
+      window.location.href = '/movies';
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
     } finally {

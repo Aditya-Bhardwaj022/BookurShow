@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createMovie } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { createMovie } from '../lib/api';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 
 export default function AdminMoviePage() {
   const navigate = useNavigate();
@@ -20,7 +20,8 @@ export default function AdminMoviePage() {
   const [error, setError] = useState('');
 
   // Guard: only ADMIN can access
-  if (localStorage.getItem('role') !== 'ADMIN') {
+  const userRole = localStorage.getItem('role');
+  if (userRole !== 'ADMIN' && userRole !== 'ROLE_ADMIN') {
     return (
       <div className="flex items-center justify-center min-h-[60vh] text-red-500 text-center">
         <div>
@@ -40,7 +41,7 @@ export default function AdminMoviePage() {
     setError('');
     setLoading(true);
     try {
-      await createMovie({ ...form, durationMinutes: Number(form.durationMinutes) });
+      await createMovie({ ...form, durationMins: Number(form.durationMinutes) });
       navigate('/movies');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create movie');
