@@ -7,7 +7,7 @@ export default function AdminDashboard() {
     {
       title: 'Movies',
       description: 'Add and manage movie listings',
-      link: '/admin/movies/new',
+      link: '/movies',
       icon: '🎬',
     },
     {
@@ -43,13 +43,13 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {adminOptions.map((option) => (
-          <Card key={option.title} className="hover:shadow-lg transition-shadow border-2 hover:border-primary/50">
+          <Card key={option.title} className="flex flex-col hover:shadow-lg transition-shadow border-2 hover:border-primary/50">
             <CardHeader className="pb-2">
               <div className="text-4xl mb-2">{option.icon}</div>
               <CardTitle>{option.title}</CardTitle>
               <CardDescription>{option.description}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="mt-auto">
               <Button asChild className="w-full">
                 <Link to={option.link}>Manage {option.title}</Link>
               </Button>

@@ -21,7 +21,7 @@ export default function AdminShows() {
 
   const [newScreen, setNewScreen] = useState({
     name: '',
-    totalSeats: 100,
+    totalseats: 100,
     seatsPerRow: 10,
     theatreId: 0,
   });
@@ -61,7 +61,7 @@ export default function AdminShows() {
     try {
       await createScreen({
         name: newScreen.name,
-        totalSeats: newScreen.totalSeats,
+        totalseats: newScreen.totalseats,
         seatsPerRow: newScreen.seatsPerRow,
         theatre: { id: newScreen.theatreId },
       });
@@ -138,8 +138,8 @@ export default function AdminShows() {
                     <Label>Total Seats</Label>
                     <Input
                       type="number"
-                      value={newScreen.totalSeats}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewScreen({ ...newScreen, totalSeats: Number(e.target.value) })}
+                      value={newScreen.totalseats}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewScreen({ ...newScreen, totalseats: Number(e.target.value) })}
                       required
                     />
                   </div>
@@ -277,7 +277,7 @@ export default function AdminShows() {
             <h4 className="font-semibold">{sc.name}</h4>
             <p className="text-xs text-muted-foreground mb-2">{sc.theatre?.name} · {sc.theatre?.city}</p>
             <div className="flex gap-3 text-xs font-medium">
-              <span>{sc.totalSeats} seats</span>
+              <span>{sc.totalseats} seats</span>
               <span className="text-muted-foreground">|</span>
               <span>{sc.seatsPerRow} per row</span>
             </div>

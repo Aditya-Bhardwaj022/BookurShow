@@ -4,11 +4,13 @@ import com.aditya.bms.dto.ScreenDTO;
 import com.aditya.bms.dto.TheatreDTO;
 import com.aditya.bms.exception.ResourceNotFoundException;
 import com.aditya.bms.model.Screen;
+import com.aditya.bms.model.Seat;
 import com.aditya.bms.model.Theatre;
 import com.aditya.bms.repository.ScreenRepository;
 import com.aditya.bms.repository.TheatreRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +42,27 @@ public class screenService {
         screen.setSeatsPerRow(screenDTO.getSeatsPerRow());
         screen.setTheatre(theatre);
 
-        Screen saved = screenRepository.save(screen);
+        // --- Automate Seat Generation ---
+        Integer totalSeats = screenDTO.getTotalseats();
+        Integer perRow = screenDTO.getSeatsPerRow();
+        
+        if (totalSeats != null && perRow != null) {
+            List<Seat> seatsList = new ArrayList<>();
+            for (int i = 0; i < totalSeats; i++) {
+                char row = (char) ('A' + (i / perRow));
+                int col = (i % perRow) + 1;
+                
+                Seat seat = new Seat();
+                seat.setSeatNumber(String.valueOf(row) + col);
+                seat.setSeatType("SILVER");
+                seat.setBasePrice(100.0);
+                seat.setScreen(screen);
+                seatsList.add(seat);
+            }
+            screen.setSeats(seatsList);
+        }
 
+        Screen saved = screenRepository.save(screen);
         return mapToDTO(saved);
     }
 
@@ -52,10 +73,40 @@ public class screenService {
     }
 
     public List<ScreenDTO> getAllScreens() {
-        return screenRepository.findAll()
-                .stream()
+        List<Screen> screens = screenRepository.findAll();
+        
+        // --- SELF-HEALING: Repair any screens with 0 seats ---
+        for (Screen screen : screens) {
+            if (screen.getSeats() == null || screen.getSeats().isEmpty()) {
+                repairScreen(screen);
+            }
+        }
+        
+        return screens.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    private void repairScreen(Screen screen) {
+        Integer totalSeats = screen.getTotalSeats();
+        Integer perRow = screen.getSeatsPerRow();
+        
+        if (totalSeats != null && perRow != null && totalSeats > 0 && perRow > 0) {
+            List<Seat> seatsList = new ArrayList<>();
+            for (int i = 0; i < totalSeats; i++) {
+                char row = (char) ('A' + (i / perRow));
+                int col = (i % perRow) + 1;
+                
+                Seat seat = new Seat();
+                seat.setSeatNumber(String.valueOf(row) + col);
+                seat.setSeatType("SILVER");
+                seat.setBasePrice(100.0);
+                seat.setScreen(screen);
+                seatsList.add(seat);
+            }
+            screen.setSeats(seatsList);
+            screenRepository.save(screen);
+        }
     }
 
     private ScreenDTO mapToDTO(Screen screen) {

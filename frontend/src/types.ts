@@ -30,7 +30,7 @@ export interface Theatre {
 export interface Screen {
   id: number;
   name: string;
-  totalSeats: number;
+  totalseats: number;
   seatsPerRow: number;
   theatre?: Theatre;
 }
@@ -62,4 +62,25 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
+}
+
+export interface Seat {
+  id: number;
+  seatNumber: string;
+  seatType: string;
+  basePrice: number;
+}
+
+export interface ShowSeat {
+  id: number;
+  seat: Seat;
+  status: string;
+  price: number;
+}
+
+export interface BookingRequestPayload {
+  userId: number;
+  showId: number;
+  seatIds: number[];
+  paymentMethod: string;
 }

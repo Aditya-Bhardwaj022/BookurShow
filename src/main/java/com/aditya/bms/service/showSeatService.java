@@ -17,9 +17,34 @@ public class showSeatService {
     @Autowired
     private ShowSeatRepository showSeatRepository;
 
-    public List<ShowSeatDTO> getSeatsByShow(Long showId) {
+    @Autowired
+    private com.aditya.bms.repository.ShowRepository showRepository;
 
+    @Autowired
+    private com.aditya.bms.repository.ScreenRepository screenRepository;
+
+    public List<ShowSeatDTO> getSeatsByShow(Long showId) {
         List<ShowSeat> seats = showSeatRepository.findByShowId(showId);
+
+        // --- SELF-HEALING: If no show-seats exist, try to generate them from the screen layout ---
+        if (seats.isEmpty()) {
+            com.aditya.bms.model.Show show = showRepository.findById(showId).orElse(null);
+            if (show != null) {
+                List<com.aditya.bms.model.Seat> screenSeats = show.getScreen().getSeats();
+                if (screenSeats != null && !screenSeats.isEmpty()) {
+                    for (com.aditya.bms.model.Seat baseSeat : screenSeats) {
+                        ShowSeat showSeat = new ShowSeat();
+                        showSeat.setShow(show);
+                        showSeat.setSeat(baseSeat);
+                        showSeat.setStatus("AVAILABLE");
+                        showSeat.setPrice(baseSeat.getBasePrice());
+                        showSeatRepository.save(showSeat);
+                    }
+                    // Re-fetch now that they are generated
+                    seats = showSeatRepository.findByShowId(showId);
+                }
+            }
+        }
 
         return seats.stream()
                 .map(this::mapToDTO)

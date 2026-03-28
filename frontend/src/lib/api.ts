@@ -1,4 +1,4 @@
-import type { Movie, Theatre, Screen, Show, User } from '../types';
+import type { Movie, Theatre, Screen, Show, User, ShowSeat, BookingRequestPayload } from '../types';
 
 const API_BASE = '/api';
 
@@ -89,7 +89,7 @@ export async function fetchScreens(): Promise<Screen[]> {
   return result.data || result;
 }
 
-export async function createScreen(screenData: { name: string; totalSeats: number; seatsPerRow: number; theatre: { id: number } }): Promise<Screen> {
+export async function createScreen(screenData: { name: string; totalseats: number; seatsPerRow: number; theatre: { id: number } }): Promise<Screen> {
   const res = await fetch(`${API_BASE}/screens`, {
     method: 'POST',
     headers: getAuthHeaders(),
@@ -126,6 +126,13 @@ export async function createShow(showData: { startTime: string; endTime: string;
   return result.data || result;
 }
 
+export async function fetchShowSeats(showId: number): Promise<ShowSeat[]> {
+  const res = await fetch(`${API_BASE}/show-seats/show/${showId}`, { headers: getAuthHeaders() });
+  if (!res.ok) throw new Error('Failed to fetch show seats');
+  const result = await res.json();
+  return result.data || result;
+}
+
 // --- Users ---
 export async function fetchUserById(id: number): Promise<User> {
   const res = await fetch(`${API_BASE}/users/${id}`, { headers: getAuthHeaders() });
@@ -145,8 +152,8 @@ export async function updateUser(id: number, userData: Partial<User>): Promise<U
   return result.data || result;
 }
 
-// --- Bookings (Temporary/Pre-emptive) ---
-export async function createBooking(bookingRequest: { showId: number; userId: number; numberOfSeats: number }) {
+// --- Bookings ---
+export async function createBooking(bookingRequest: BookingRequestPayload) {
   const res = await fetch(`${API_BASE}/bookings`, {
     method: 'POST',
     headers: getAuthHeaders(),

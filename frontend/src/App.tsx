@@ -81,7 +81,7 @@ function Navbar() {
           {isLoggedIn ? (
             <>
               {userName && (
-                <span className="text-sm text-muted-foreground hidden sm:inline ml-2">
+                <span className="text-sm font-bold text-foreground hidden sm:inline ml-2">
                   Hi, {userName}
                 </span>
               )}
