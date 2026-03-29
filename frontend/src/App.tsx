@@ -10,6 +10,7 @@ import AdminDashboardPage from './pages/AdminDashboard';
 import AdminTheatresPage from './pages/AdminTheatres';
 import AdminShowsPage from './pages/AdminShows';
 import { Button } from './components/ui/button';
+import logo from './assets/logo.png';
 
 function ProtectedRoute({ children, role }: { children: React.ReactNode; role?: string }) {
   const token = localStorage.getItem('token');
@@ -61,40 +62,40 @@ function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-        <Link to="/" className="flex items-center space-x-2">
-          <span className="text-xl font-bold tracking-tight">🎬 BookYourShow</span>
+    <header className="sticky top-0 z-40 w-full border-b bg-black text-white backdrop-blur supports-[backdrop-filter]:bg-black/90">
+      <div className="container flex items-center justify-between h-20 px-4 mx-auto">
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="BOOKURSHOW Logo" className="h-16 w-auto object-contain" />
         </Link>
         <nav className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-white hover:bg-white/10">
             {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" className="text-white hover:bg-white/10" asChild>
             <Link to="/movies">Movies</Link>
           </Button>
           {(userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') && (
-            <Button variant="ghost" className="text-primary font-semibold" asChild>
+            <Button variant="ghost" className="text-primary font-bold hover:bg-white/10" asChild>
               <Link to="/admin">Dashboard</Link>
             </Button>
           )}
           {isLoggedIn ? (
             <>
               {userName && (
-                <span className="text-sm font-bold text-foreground hidden sm:inline ml-2">
+                <span className="text-sm font-bold text-white hidden sm:inline ml-2">
                   Hi, {userName}
                 </span>
               )}
-              <Button variant="outline" size="sm" onClick={handleLogout}>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="text-white border-white hover:bg-white hover:text-black">
                 Logout
               </Button>
             </>
           ) : (
             <>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" className="text-white hover:bg-white/10" asChild>
                 <Link to="/login">Login</Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="bg-white text-black hover:bg-white/90">
                 <Link to="/signup">Sign Up</Link>
               </Button>
             </>
@@ -130,9 +131,10 @@ function HomePage() {
           </div>
         </div>
       </main>
-      <footer className="border-t py-6">
-        <div className="container flex items-center justify-center px-4 mx-auto">
-          <p className="text-sm text-muted-foreground">© 2026 BookYourShow. All rights reserved.</p>
+      <footer className="border-t py-8 bg-black text-white">
+        <div className="container flex flex-col items-center justify-center px-4 mx-auto space-y-4">
+          <img src={logo} alt="BOOKURSHOW" className="h-12 w-auto opacity-80" />
+          <p className="text-sm text-gray-400">© 2026 BOOKURSHOW. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -50,11 +50,11 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40.2% 98%;
-    --card: 222.2 84% 4.9%;
+    --background: 0 0% 0%; /* Pure black for premium feel */
+    --foreground: 0 0% 100%;
+    --card: 0 0% 3%;
     --card-foreground: 210 40.2% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 0 0% 0%;
     --popover-foreground: 210 40.2% 98%;
     --primary: 210 40.2% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -79,5 +79,6 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-family: 'Outfit', sans-serif;
   }
 }
