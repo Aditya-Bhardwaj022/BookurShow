@@ -14,6 +14,6 @@ public class BookingRequestDTO {
     private Long userId;
     protected Long showId;
     private List<Long> seatIds;
-    private String paymentMethod;
+    private  String paymentMethod;
 
 }
