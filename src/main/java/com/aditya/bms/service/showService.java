@@ -195,6 +195,6 @@ public class showService {
 
         showDto.setAvailableSeats(seatDtos);
 
-        return showDto;
+        return showDto
     }
 }
