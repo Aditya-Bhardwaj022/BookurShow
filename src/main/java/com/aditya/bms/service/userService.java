@@ -29,7 +29,7 @@ public class userService {
         return mapToDTO(savedUser);
     }
 
-    public UserDTO  getUserById(Long id) {
+    public UserDTO getUserById(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() ->
